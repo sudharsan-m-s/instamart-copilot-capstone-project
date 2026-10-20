@@ -1,5 +1,3 @@
-"""Compare ticket prompts, apply a token budget and route the results."""
-
 import sys
 from pathlib import Path
 import pandas as pd

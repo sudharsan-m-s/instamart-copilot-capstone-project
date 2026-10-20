@@ -13,9 +13,8 @@ df_products = pd.read_csv(RAW_DIR / "products.csv")
 df_orders = pd.read_csv(RAW_DIR / "orders.csv")
 
 # PART A - Task 3: Clean customers
-print("=" * 60)
+
 print("CLEANING CUSTOMERS")
-print("=" * 60)
 
 city_changes = (df_customers["city"] != df_customers["city"].str.strip().str.title()).sum()
 original_gender = df_customers["gender"].copy()

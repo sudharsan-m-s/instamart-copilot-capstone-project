@@ -1,5 +1,3 @@
-"""Run all four parts from the project root, stopping at the first failed step."""
-
 import os
 from pathlib import Path
 import subprocess

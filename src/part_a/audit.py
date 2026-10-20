@@ -34,9 +34,7 @@ for name, df in tables.items():
     print(missing_summary, "\n")
 
 # Customer Audit
-print("=" * 60)
 print("CUSTOMER AUDIT")
-print("=" * 60)
 blank_age = df_customers["age"].isna().sum()
 ages_num = pd.to_numeric(df_customers["age"], errors="coerce")
 ages_outside = ((ages_num < 10) | (ages_num > 100)).sum()
@@ -53,9 +51,9 @@ print("Distinct nonblank gender spellings:", distinct_genders)
 print("Blank genders:", blank_genders)
 
 # Order Audit
-print("\n" + "=" * 60)
+
 print("ORDER AUDIT")
-print("=" * 60)
+
 total_order_rows = len(df_orders)
 exact_duplicates = df_orders.duplicated().sum()
 pending_orders = (df_orders["status"] == "pending").sum()

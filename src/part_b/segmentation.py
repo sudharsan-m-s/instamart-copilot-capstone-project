@@ -1,5 +1,3 @@
-"""Build RFM segments and save customer assignments."""
-
 from pathlib import Path
 import pandas as pd
 from sklearn.preprocessing import StandardScaler

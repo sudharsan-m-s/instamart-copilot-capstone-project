@@ -1,8 +1,3 @@
-"""
-evaluation.py - Part B Validation & Checkpoint Assertions.
-Validates outputs/customer_segments.csv, outputs/lapse_model.joblib, and outputs/retention_list.csv.
-"""
-
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -11,9 +6,7 @@ import joblib
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 
-print("=" * 70)
 print("RUNNING PART B VALIDATION CHECKPOINTS")
-print("=" * 70)
 
 # 1. Customer Segments Validation
 seg_path = OUTPUTS_DIR / "customer_segments.csv"
@@ -52,6 +45,5 @@ assert df_ret["lapse_probability"].is_monotonic_decreasing, "Retention list is n
 
 print("[PASS] retention_list.csv verified (10 customers, sorted descending).")
 
-print("\n" + "=" * 70)
+print("\n" )
 print("ALL PART B CHECKPOINTS PASSED")
-print("=" * 70)

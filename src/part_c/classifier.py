@@ -1,5 +1,3 @@
-"""Ticket prompts, retries and response validation."""
-
 import sys
 import json
 import re

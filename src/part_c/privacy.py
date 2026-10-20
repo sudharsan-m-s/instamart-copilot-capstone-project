@@ -1,8 +1,3 @@
-"""
-privacy.py - Part C Tasks 1 & 2: Input Guardrails and PII Redaction for Support Tickets.
-Ensures no empty or long tickets reach LLMs and completely strips emails, phone numbers, and order IDs.
-"""
-
 import re
 import sys
 from pathlib import Path
