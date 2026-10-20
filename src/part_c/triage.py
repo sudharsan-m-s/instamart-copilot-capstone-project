@@ -1,9 +1,4 @@
-"""
-triage.py - Part C Tasks 6 & 7: Zero-Shot vs Few-Shot Comparison, Token Budget Demo, and Production Routing.
-Outputs:
-- outputs/triage_budget_demo.csv
-- outputs/triage_results.csv
-"""
+"""Compare ticket prompts, apply a token budget and route the results."""
 
 import sys
 from pathlib import Path
@@ -19,7 +14,6 @@ from src.part_c.privacy import check_input_guardrails, redact_pii, verify_redact
 from src.part_c.classifier import (
     ZERO_SHOT_PROMPT,
     FEW_SHOT_PROMPT,
-    ALLOWED_CATEGORIES,
     call_with_retry,
     validate_response,
 )
@@ -141,21 +135,15 @@ def route_tickets(classified, segments):
 
 
 def main():
-    print("=" * 70)
     print("PART C: SUPPORT TICKET TRIAGE WITH GUARDRAILS")
-    print("=" * 70)
 
     df_tickets = pd.read_csv(TICKETS_PATH, keep_default_na=False)
     # A missing customer is non-premium; a missing Part B artifact is a setup error.
     df_segments = pd.read_csv(SEGMENTS_PATH)
     print(f"Loaded {len(df_tickets)} tickets from {TICKETS_PATH}")
 
-    # ==========================================================================
     # Task 6: Compare Zero-Shot and Few-Shot Runs
-    # ==========================================================================
-    print("\n" + "=" * 70)
     print("TASK 6: ZERO-SHOT VS FEW-SHOT COMPARISON (NO TOKEN BUDGET)")
-    print("=" * 70)
 
     print("\n--- Running Zero-Shot Pipeline ---")
     df_zero, tokens_zero = run_pipeline(df_tickets, ZERO_SHOT_PROMPT)
@@ -174,14 +162,11 @@ def main():
     zero_acc = (zero_correct / len(zero_class)) * 100
     few_acc = (few_correct / len(few_class)) * 100
 
-    print("\n" + "-" * 70)
     print(f"{'Metric':<30} | {'Zero-Shot':<16} | {'Few-Shot':<16}")
-    print("-" * 70)
     print(f"{'Classified Tickets':<30} | {len(zero_class):<16} | {len(few_class):<16}")
     print(f"{'Accuracy (%)':<30} | {zero_acc:<16.1f} | {few_acc:<16.1f}")
     print(f"{'Total Tokens Used':<30} | {tokens_zero:<16} | {tokens_few:<16}")
     print(f"{'Tokens per Classified Ticket':<30} | {tokens_zero / len(zero_class):<16.1f} | {tokens_few / len(few_class):<16.1f}")
-    print("-" * 70)
 
     # Zero-Shot Confusion Matrix
     print("\n--- Zero-Shot Confusion Matrix (Rows: True, Columns: Pred) ---")
@@ -202,12 +187,8 @@ def main():
     assert round(few_acc, 1) == 100.0, f"Expected few-shot accuracy 100%, got {few_acc:.1f}%"
     print("[PASS] Status counts (135/12/9) and accuracies (85.7% / 100%) match reference checkpoints.")
 
-    # ==========================================================================
     # Task 7a: Token Budget Demo
-    # ==========================================================================
-    print("\n" + "=" * 70)
     print("TASK 7A: TOKEN BUDGET DEMO (TOKEN_BUDGET = 6000)")
-    print("=" * 70)
 
     df_budget, tokens_budget = run_pipeline(df_tickets, ZERO_SHOT_PROMPT, token_budget=6000)
     exhausted_count = (df_budget["status"] == "budget_exhausted").sum()
@@ -219,12 +200,8 @@ def main():
     print(f"Saved budget demo results to: {budget_demo_path}")
     assert exhausted_count > 0, "No tickets were stopped by the token budget!"
 
-    # ==========================================================================
     # Task 7b: Production Routing
-    # ==========================================================================
-    print("\n" + "=" * 70)
     print("TASK 7B: PRODUCTION ROUTING & OUTPUT GENERATION (TOKEN_BUDGET = 100000)")
-    print("=" * 70)
 
     # Run few-shot production pipeline
     df_prod, _ = run_pipeline(df_tickets, FEW_SHOT_PROMPT, token_budget=100000)

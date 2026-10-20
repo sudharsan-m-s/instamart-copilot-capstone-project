@@ -1,9 +1,4 @@
-"""
-lapse_model.py - Part B Tasks 4 to 8: Lapse Problem Definition, Modeling, Evaluation, and Persisting.
-Outputs:
-- outputs/lapse_model.joblib
-- outputs/retention_list.csv
-"""
+"""Train lapse models, compare results and save the model and retention list."""
 
 from pathlib import Path
 import json
@@ -31,12 +26,8 @@ CUSTOMERS_PATH = DATA_DIR / "clean" / "customers.csv"
 PRODUCTS_PATH = DATA_DIR / "clean" / "products.csv"
 SEGMENTS_PATH = OUTPUTS_DIR / "customer_segments.csv"
 
-# ==============================================================================
 # Task 4: Define the Lapse Problem
-# ==============================================================================
-print("=" * 70)
 print("PART B - TASK 4: DEFINE LAPSE PROBLEM & COHORT EXTRACTION")
-print("=" * 70)
 
 orders = pd.read_csv(ORDERS_PATH)
 customers = pd.read_csv(CUSTOMERS_PATH)
@@ -134,12 +125,8 @@ base_f1 = f1_score(y_test, y_pred_baseline, zero_division=0)
 print(f"\nBaseline (Always Not Lapsed) -> Accuracy: {base_acc:.1f}%, Lapsed-class F1: {base_f1:.3f}")
 assert round(base_acc, 1) == 61.6, f"Expected 61.6% baseline accuracy, got {base_acc}"
 
-# ==============================================================================
 # Task 5: Preprocessing Without Leakage
-# ==============================================================================
-print("\n" + "=" * 70)
 print("PART B - TASK 5: PREPROCESSING WITHOUT DATA LEAKAGE")
-print("=" * 70)
 
 # Check missing values in features
 missing_counts = features[num_cols + cat_cols].isnull().sum().sum()
@@ -169,12 +156,8 @@ print("information leakage from the 232 test rows, so minor random sampling vari
 X_train_proc = preprocessor.transform(X_train[num_cols + cat_cols])
 X_test_proc = preprocessor.transform(X_test[num_cols + cat_cols])
 
-# ==============================================================================
 # Task 6: Train, Tune, and Evaluate Models
-# ==============================================================================
-print("\n" + "=" * 70)
 print("PART B - TASK 6: MODEL TUNING & EVALUATION (5-FOLD CV)")
-print("=" * 70)
 
 # 1. Logistic Regression Tuning
 lr_grid = GridSearchCV(
@@ -227,16 +210,9 @@ assert rf_f1 >= 0.55, f"Random Forest F1 ({rf_f1:.3f}) fell below minimum requir
 # Justification of model choice
 print("\nModel Selection Justification:")
 print(f"Random Forest is selected with CV F1 {rf_grid.best_score_:.3f} and test F1 {rf_f1:.3f}")
-print("and captures complex non-linear interactions between customer recency, frequency, and order values.")
-print("In retention management, the cost of failing to identify a lapsing customer (lost lifetime value) greatly")
-print("outweighs the modest operational cost of sending re-engagement offers to a customer who might have ordered anyway.")
 
-# ==============================================================================
 # Task 7: Class-Balance Experiment
-# ==============================================================================
-print("\n" + "=" * 70)
 print("PART B - TASK 7: CLASS-BALANCE OVERSAMPLING EXPERIMENT")
-print("=" * 70)
 
 train_df = X_train.copy()
 train_df["lapsed"] = y_train
@@ -271,12 +247,8 @@ print(f"\nRecall changed by {(bal_rec - lr_rec) * 100:.1f} percentage points; "
       f"precision changed by {(bal_prec - lr_prec) * 100:.1f} points.")
 print("Higher recall finds more lapsing customers, but lower precision spends offers on more loyal customers.")
 
-# ==============================================================================
 # Task 8: Interpret, Persist, and Create Retention List
-# ==============================================================================
-print("\n" + "=" * 70)
 print("PART B - TASK 8: FEATURE IMPORTANCE, PERSISTENCE, & RETENTION LIST")
-print("=" * 70)
 
 # Feature Names from ColumnTransformer
 cat_encoder = preprocessor.named_transformers_["cat"]
@@ -326,8 +298,6 @@ test_merged = X_test.copy()
 test_merged["actually_lapsed"] = y_test.values
 test_merged = test_merged.merge(segments_df[["customer_id", "is_premium", "segment_name"]], on="customer_id", how="left")
 
-# Premium test-set customers
-premium_test = test_merged[test_merged["is_premium"] == True].copy()
 test_probs = best_rf.predict_proba(X_test_proc)[:, 1]
 test_merged["lapse_probability"] = test_probs
 

@@ -1,6 +1,4 @@
-"""
-classifier.py - Part C Tasks 3, 4, 5: Prompts, Resilient LLM Calls with Jitter, and Response Validation.
-"""
+"""Ticket prompts, retries and response validation."""
 
 import sys
 import json
@@ -13,7 +11,6 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-import mock_llm
 from mock_llm import chat, TransientLLMError
 
 # Allowed ticket categories
@@ -34,10 +31,7 @@ Ticket: The rider marked [ORDER_ID] as delivered but I never received the packag
 
 
 def call_with_retry(messages: list[dict], ticket_id: str, max_retries: int = 3, base_delay: float = 0.05):
-    """
-    Task 4: Wraps model call in a retry function with exponential backoff and jitter.
-    Logs each retry attempt with ticket id, retry number, and wait duration.
-    """
+    """Retry transient failures with a logged exponential delay and jitter."""
     for n in range(max_retries + 1):
         try:
             return chat(messages)
@@ -51,14 +45,7 @@ def call_with_retry(messages: list[dict], ticket_id: str, max_retries: int = 3, 
 
 
 def validate_response(content: str) -> tuple[str, str | None, str | None]:
-    """
-    Task 5: Validates LLM output:
-    1. Parse JSON -> if category in allowed -> 'classified_json'
-    2. If invalid JSON -> extract lowercase words with re.findall(r'[a-z]+', content.lower()).
-       If exactly one allowed category is present -> 'classified_keyword'
-    3. In all other cases -> 'flagged_invalid_output' (route to human review; never guess)
-    Returns: (status, category, reason)
-    """
+    """Return status, category and reason; ambiguous replies go to human review."""
     # 1. Check for valid JSON
     try:
         parsed = json.loads(content)

@@ -1,11 +1,7 @@
-"""
-segmentation.py - Part B Tasks 1 to 3: Customer Segments using RFM, K-Means, and PCA.
-Outputs customer segments to outputs/customer_segments.csv.
-"""
+"""Build RFM segments and save customer assignments."""
 
 from pathlib import Path
 import pandas as pd
-import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
@@ -18,14 +14,9 @@ OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
 ORDERS_PATH = DATA_DIR / "clean" / "orders.csv"
-CUSTOMERS_PATH = DATA_DIR / "clean" / "customers.csv"
 
-# ==============================================================================
 # Task 1: Build the RFM Table
-# ==============================================================================
-print("=" * 70)
 print("PART B - TASK 1: BUILD RFM TABLE")
-print("=" * 70)
 
 orders = pd.read_csv(ORDERS_PATH)
 orders["order_ts"] = pd.to_datetime(orders["order_ts"])
@@ -60,12 +51,8 @@ assert round(rfm["monetary"].mean(), 2) == 2552.06, f"Expected monetary mean 255
 assert round(rfm["monetary"].max(), 2) == 14766.55, f"Expected monetary max 14766.55, got {rfm['monetary'].max():.2f}"
 print("[PASS] RFM table matches all reference checkpoints.")
 
-# ==============================================================================
 # Task 2: Cluster with K-Means
-# ==============================================================================
-print("\n" + "=" * 70)
 print("PART B - TASK 2: K-MEANS CLUSTERING & ELBOW / SILHOUETTE ANALYSIS")
-print("=" * 70)
 
 rfm_features = ["recency", "frequency", "monetary"]
 scaler = StandardScaler()
@@ -86,18 +73,10 @@ df_eval = pd.DataFrame(kmeans_results)
 print(df_eval.to_string(index=False))
 
 # Explanation for K choice
-print("\nK Selection Analysis:")
-print("Inertia consistently decreases as K increases because more centroids reduce the distance to cluster")
-print("centers; at K=N, inertia becomes 0. Therefore, inertia alone cannot choose optimal K.")
-print("The silhouette score peaks at K=4 (0.526), perfectly aligning with a sharp elbow in inertia (743.1).")
-print("Hence, K=4 provides the optimal balance of statistical separation and actionable business interpretability.")
+print("\nUsing K=4: highest silhouette score and four useful customer groups.")
 
-# ==============================================================================
 # Task 3: Profile, Name and Project the Segments (K=4)
-# ==============================================================================
-print("\n" + "=" * 70)
 print("PART B - TASK 3: SEGMENT PROFILING, NAMING, AND PCA PROJECTION")
-print("=" * 70)
 
 km4 = KMeans(n_clusters=4, n_init=10, random_state=42)
 rfm["cluster"] = km4.fit_predict(X_scaled)
@@ -106,27 +85,7 @@ rfm["cluster"] = km4.fit_predict(X_scaled)
 monetary_by_cluster = rfm.groupby("cluster")["monetary"].mean()
 premium_cluster_id = monetary_by_cluster.idxmax()
 
-# Business naming and recommended actions
-segment_metadata = {
-    "Occasional Shoppers": {
-        "action": "Nudge with category discount coupons to increase order frequency.",
-    },
-    "Premium Spenders": {
-        "action": "Offer VIP priority delivery, high-end electronics deals, and dedicated support desk routing.",
-    },
-    "Frequent Shoppers": {
-        "action": "Enroll in automated recurring grocery subscription and loyalty rewards.",
-    },
-    "At-Risk / Lapsed": {
-        "action": "Re-engagement win-back campaigns and personalized reactivate discounts.",
-    },
-}
-
-# Map clusters dynamically based on characteristics:
-# Highest monetary -> Premium Spenders
-# Highest frequency -> Frequent Shoppers
-# Highest recency -> At-Risk / Lapsed
-# Remainder -> Occasional Shoppers
+# Name clusters by their mean behaviour, rather than assuming an id order.
 freq_by_cluster = rfm.groupby("cluster")["frequency"].mean()
 rec_by_cluster = rfm.groupby("cluster")["recency"].mean()
 
