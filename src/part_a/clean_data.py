@@ -17,6 +17,8 @@ print("=" * 60)
 print("CLEANING CUSTOMERS")
 print("=" * 60)
 
+city_changes = (df_customers["city"] != df_customers["city"].str.strip().str.title()).sum()
+original_gender = df_customers["gender"].copy()
 # (a) Standardize city: strip whitespace and title-case
 df_customers["city"] = df_customers["city"].str.strip().str.title()
 
@@ -47,6 +49,8 @@ print("\nGender distribution:")
 print(df_customers["gender"].value_counts())
 print("\nMissing ages:", df_customers["age"].isna().sum())
 print(f"Age range: {df_customers['age'].min():.0f} to {df_customers['age'].max():.0f}")
+print("City values changed:", city_changes)
+print("Gender values changed:", (original_gender != df_customers["gender"]).sum())
 
 
 # PART A - Task 4: Clean orders
@@ -81,10 +85,12 @@ df_orders["order_amount"] = df_orders["order_amount"].fillna(imputed_amounts)
 
 # 5. Handle delivery times
 df_orders["delivery_minutes"] = pd.to_numeric(df_orders["delivery_minutes"], errors="coerce")
+negative_durations = (df_orders["delivery_minutes"] < 0).sum()
 df_orders.loc[df_orders["delivery_minutes"] < 0, "delivery_minutes"] = None
 
 # Completed orders: impute missing delivery times with category median
 completed_mask = df_orders["status"].eq("completed")
+missing_completed_durations = df_orders.loc[completed_mask, "delivery_minutes"].isna().sum()
 category_medians = (
     df_orders.loc[completed_mask]
     .groupby("category")["delivery_minutes"]
@@ -105,6 +111,10 @@ orders_clean.to_csv(CLEAN_DIR / "orders.csv", index=False)
 df_products.to_csv(CLEAN_DIR / "products.csv", index=False)
 
 print(f"Total cleaned order rows: {len(orders_clean)}")
+print("Exact duplicates removed:", exact_dupes_count)
+print("Amounts imputed after deduplication:", missing_amounts_before)
+print("Negative durations after deduplication:", negative_durations)
+print("Completed durations imputed:", missing_completed_durations)
 print("\nOrder status counts:")
 print(orders_clean["status"].value_counts())
 print("\nMissing order amounts:", orders_clean["order_amount"].isna().sum())

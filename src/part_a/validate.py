@@ -130,4 +130,4 @@ with sqlite3.connect(DB_PATH) as con:
 
 print("[PASS] All 7 SQL queries executed and matched reference results.")
 
-print("\n ALL CHECKPOINTS PASSED")
+print("ALL CHECKPOINTS PASSED")

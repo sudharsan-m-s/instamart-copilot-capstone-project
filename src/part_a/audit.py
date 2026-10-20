@@ -26,9 +26,10 @@ for name, df in tables.items():
     print("\nData types:")
     print(df.dtypes)
     print("\nMissing values:")
+    missing = df.isnull() | df.eq("")
     missing_summary = pd.DataFrame({
-        "Count": df.isnull().sum(),
-        "Percentage": (df.isnull().mean() * 100).round(2),
+        "Count": missing.sum(),
+        "Percentage": (missing.mean() * 100).round(2),
     })
     print(missing_summary, "\n")
 

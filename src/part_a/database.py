@@ -37,7 +37,3 @@ with sqlite3.connect(DB_PATH) as con:
 print("Database created/updated successfully at:", DB_PATH)
 print("Tables in database:", tables)
 print(f"Row counts -> customers: {len(customers)}, products: {len(products)}, orders: {len(orders)}")
-
-print("\n Database created/updated successfully at:", DB_PATH)
-print("Tables in database:", tables)
-print(f"Row counts -> customers: {len(customers)}, products: {len(products)}, orders: {len(orders)}")

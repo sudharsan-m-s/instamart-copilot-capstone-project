@@ -1,0 +1,78 @@
+{
+  "run_id": "demo-S6",
+  "scenario_id": "S6",
+  "messages": [
+    {
+      "role": "system",
+      "content": "AGENT: Use the tools to check the order and refund policy. Only completed orders delivered after 45 minutes qualify. Escalate amounts above INR 1000. All requests are within 7 days. Never claim a refund before the tool confirms it."
+    },
+    {
+      "role": "user",
+      "content": "Refund for order ORD-999999 please."
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "call_1",
+          "name": "get_order",
+          "arguments": {
+            "order_id": "ORD-999999"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_1",
+      "name": "get_order",
+      "content": "{\"error\": \"order not found\"}"
+    },
+    {
+      "role": "assistant",
+      "content": "NOT_FOUND: no such order."
+    }
+  ],
+  "tokens_used": 148,
+  "llm_calls": 2,
+  "step_number": 1,
+  "steps": [
+    {
+      "tool": "get_order",
+      "arguments": {
+        "order_id": "ORD-999999"
+      },
+      "observation": {
+        "error": "order not found"
+      }
+    }
+  ],
+  "tools_executed": [
+    "get_order"
+  ],
+  "pending_tools": [],
+  "elapsed_seconds": 0.0035967000003438443,
+  "max_iterations": 6,
+  "token_limit": 6000,
+  "time_limit_seconds": 10,
+  "result": {
+    "run_id": "demo-S6",
+    "scenario_id": "S6",
+    "status": "NOT_FOUND",
+    "final_answer": "NOT_FOUND: no such order.",
+    "steps": [
+      {
+        "tool": "get_order",
+        "arguments": {
+          "order_id": "ORD-999999"
+        },
+        "observation": {
+          "error": "order not found"
+        }
+      }
+    ],
+    "llm_calls": 2,
+    "tokens_used": 148
+  }
+}

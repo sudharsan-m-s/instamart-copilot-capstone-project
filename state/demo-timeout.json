@@ -1,0 +1,33 @@
+{
+  "run_id": "demo-timeout",
+  "scenario_id": "S1-timeout",
+  "messages": [
+    {
+      "role": "system",
+      "content": "AGENT: Use the tools to check the order and refund policy. Only completed orders delivered after 45 minutes qualify. Escalate amounts above INR 1000. All requests are within 7 days. Never claim a refund before the tool confirms it."
+    },
+    {
+      "role": "user",
+      "content": "My order ORD-100048 reached me very late. I would like a refund."
+    }
+  ],
+  "tokens_used": 0,
+  "llm_calls": 0,
+  "step_number": 0,
+  "steps": [],
+  "tools_executed": [],
+  "pending_tools": [],
+  "elapsed_seconds": 1.0000003385357559e-06,
+  "max_iterations": 6,
+  "token_limit": 6000,
+  "time_limit_seconds": 0,
+  "result": {
+    "run_id": "demo-timeout",
+    "scenario_id": "S1-timeout",
+    "status": "FALLBACK_TIMEOUT",
+    "final_answer": "Human review needed: timeout reached after 0 tools and 0 model calls. Review the saved observations before taking further action.",
+    "steps": [],
+    "llm_calls": 0,
+    "tokens_used": 0
+  }
+}
